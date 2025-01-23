@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room and Equipment Catalog</title>
+  <style>
+    
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    header {
+      background-color: #007BFF;
+      color: white;
+      text-align: center;
+      padding: 1em 0;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    h2 {
+      color: #007BFF;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    form label {
+      grid-column: span 1;
+      align-self: center;
+    }
+
+    form input,
+    form select,
+    form button {
+      grid-column: span 1;
+      padding: 8px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    form button {
+      grid-column: span 2;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    form button:hover {
+      background-color: #0056b3;
+    }
+
+    #results-section table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    #results-section th,
+    #results-section td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    #results-section th {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    #results-section tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Room and Equipment Catalog</h1>
+  </header>
+
+  <main>
+    
+    <section id="search-section">
+      <h2>Search Catalog</h2>
+      <form id="search-form">
+        <label for="search-keyword">Keyword:</label>
+        <input type="text" id="search-keyword" name="keyword" placeholder="Enter room or equipment name...">
+        
+        <label for="filter-capacity">Capacity:</label>
+        <input type="number" id="filter-capacity" name="capacity" min="1" placeholder="Minimum capacity...">
+
+        <label for="filter-type">Type:</label>
+        <select id="filter-type" name="type">
+          <option value="all">All</option>
+          <option value="room">Room</option>
+          <option value="equipment">Equipment</option>
+        </select>
+
+        <label for="filter-availability">Availability:</label>
+        <select id="filter-availability" name="availability">
+          <option value="all">All</option>
+          <option value="available">Available</option>
+          <option value="unavailable">Unavailable</option>
+        </select>
+
+        <button type="button" id="search-btn">Search</button>
+      </form>
+    </section>
+
+   
+    <section id="results-section">
+      <h2>Search Results</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Availability</th>
+          </tr>
+        </thead>
+        <tbody id="results-body">
+         
+        </tbody>
+      </table>
+    </section>
+
+    
+    <section id="admin-section">
+      <h2>Admin Actions</h2>
+      <form id="modify-form">
+        <label for="item-name">Name:</label>
+        <input type="text" id="item-name" name="name" placeholder="Enter item name...">
+
+        <label for="item-type">Type:</label>
+        <select id="item-type" name="type">
+          <option value="room">Room</option>
+          <option value="equipment">Equipment</option>
+        </select>
+
+        <label for="item-capacity">Capacity:</label>
+        <input type="number" id="item-capacity" name="capacity" min="1" placeholder="Capacity...">
+
+        <label for="item-availability">Availability:</label>
+        <select id="item-availability" name="availability">
+          <option value="available">Available</option>
+          <option value="unavailable">Unavailable</option>
+        </select>
+
+        <button type="button" id="add-btn">Add/Modify</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Room and Equipment Catalog System</p>
+  </footer>
+
+  <script>
+    
+    let catalog = [
+      { name: "Lecture Room 1", type: "room", capacity: 50, availability: "available" },
+      { name: "Projector", type: "equipment", capacity: 0, availability: "unavailable" },
+      { name: "Conference Room", type: "room", capacity: 20, availability: "available" },
+      { name: "Whiteboard", type: "equipment", capacity: 0, availability: "available" },
+    ];
+
+    
+    function displayResults(data) {
+      const resultsBody = document.getElementById("results-body");
+      resultsBody.innerHTML = "";
+
+      data.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.type}</td>
+          <td>${item.capacity}</td>
+          <td>${item.availability}</td>
+        `;
+        resultsBody.appendChild(row);
+      });
+    }
+
+    
+    document.getElementById("search-btn").addEventListener("click", () => {
+      const keyword = document.getElementById("search-keyword").value.toLowerCase();
+      const capacity = parseInt(document.getElementById("filter-capacity").value) || 0;
+      const type = document.getElementById("filter-type").value;
+      const availability = document.getElementById("filter-availability").value;
+
+      const filteredData = catalog.filter(item => {
+        return (
+          (keyword === "" || item.name.toLowerCase().includes(keyword)) &&
+          (capacity === 0 || item.capacity >= capacity) &&
+          (type === "all" || item.type === type) &&
+          (availability === "all" || item.availability === availability)
+        );
+      });
+
+      displayResults(filteredData);
+    });
+
+    
+    document.getElementById("add-btn").addEventListener("click", () => {
+      const name = document.getElementById("item-name").value;
+      const type = document.getElementById("item-type").value;
+      const capacity = parseInt(document.getElementById("item-capacity").value);
+      const availability = document.getElementById("item-availability").value;
+
+      const existingItem = catalog.find(item => item.name === name);
+      if (existingItem) {
+        
+        existingItem.type = type;
+        existingItem.capacity = capacity;
+        existingItem.availability = availability;
+      } else {
+        
+        catalog.push({ name, type, capacity, availability });
+      }
+
+      alert("Item added/modified successfully!");
+      displayResults(catalog);
+    });
+
+    
+    displayResults(catalog);
+  </script>
+</body>
+</html>
